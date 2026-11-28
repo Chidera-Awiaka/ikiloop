@@ -809,14 +809,23 @@ function hanko(line){
     return p; }
   function setup(){
     var se=season(), n={off:0,light:1,full:2.3}[PREFS.weather]||0; P=[]; kind=se;
-    if(still()) n=0;
+    var calm=still(); // reduced motion or Calm: show the season as a still picture instead of nothing
     var plan={fall:[['leaf',11]],winter:[['flake',42]],spring:[['drop',36],['petal',6]],summer:[['fly',12]]}[se];
     plan.forEach(function(t){ for(var i=0;i<Math.round(t[1]*n);i++) P.push(make(t[0],false)); });
+    if(calm){ paintStill(); return; }
     if(P.length&&!raf) raf=requestAnimationFrame(frame);
     if(!P.length) ctx.clearRect(0,0,W,H);
   }
+  function paintStill(){
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<P.length;i++){ var p=P[i], sz=p.sz*p.z;
+      if(p.type==='drop'){ ctx.globalAlpha=.45*p.z; ctx.drawImage(S.drop,p.x,p.y,sz,sz*1.5); }
+      else if(p.type==='fly'){ ctx.globalAlpha=.55; ctx.drawImage(S.fly,p.x-sz/2,p.y-sz/2,sz,sz); }
+      else { ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.a); ctx.globalAlpha=(p.type==='flake'?.8:.9)*Math.min(1,p.z+.2); ctx.drawImage(p.type==='petal'?S.petal:p.img,-sz/2,-sz/2,sz,sz); ctx.restore(); } }
+    ctx.globalAlpha=1;
+  }
   function frame(t){
-    raf=null; if(!P.length) return; raf=requestAnimationFrame(frame); if(document.hidden) return;
+    raf=null; if(!P.length||still()) return; raf=requestAnimationFrame(frame); if(document.hidden) return;
     ctx.clearRect(0,0,W,H); var wind=Math.sin(t/4000)*.6;
     for(var i=0;i<P.length;i++){ var p=P[i], sz=p.sz*p.z; p.w+=.012;
       if(p.type==='drop'){ p.y+=p.vy*p.z; p.x+=wind*1.5; ctx.globalAlpha=.55*p.z; ctx.drawImage(S.drop,p.x,p.y,sz,sz*1.5); }

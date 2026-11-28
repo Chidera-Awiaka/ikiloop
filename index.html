@@ -334,6 +334,64 @@ kbd{font-family:var(--mono);font-size:.72rem;border:1px solid var(--line);border
 @media (prefers-reduced-motion: reduce){.breath,.hanko{animation:none!important}.hanko{opacity:1}}
 @media (prefers-reduced-motion: reduce){.demo *,.pop,body::before{animation:none!important;transition:none!important}}
 @media (prefers-reduced-motion: reduce){.icon,dialog[open],.home li.in,.sh-body.swap,.pulse,#inf,.toast{transition:none!important;animation:none!important}}
+
+/* Craft pass (Nov 28, from the scroll-craft taste floor): fewer tells, real states, one signature move */
+:root{--ease:cubic-bezier(.23,1,.32,1)}
+::selection{background:color-mix(in srgb,var(--spark) 28%,transparent);color:var(--sumi)}
+html{scrollbar-color:var(--line) transparent;accent-color:var(--ember)}
+input{caret-color:var(--ember)}
+a{text-underline-offset:3px;text-decoration-thickness:1px}
+#count,#daycount,.orb .ct,#skyt,.newlog time{font-variant-numeric:tabular-nums}
+header::before{display:none}
+.pulse{animation:none}
+.now-line{font-family:var(--body);font-size:.92rem;letter-spacing:0}
+#vote-note{font-family:var(--body);font-size:.92rem;letter-spacing:0}
+details.why summary{font-family:var(--body);font-size:.95rem;font-weight:500;letter-spacing:0}
+footer{font-size:.9rem;color:var(--ash)}
+.btn,.tester input,.wish input{border-radius:999px}
+.hero{border-radius:20px}
+.newlog,.support{border-radius:16px}
+dialog[open]{animation-duration:.24s;animation-timing-function:var(--ease)}
+.sh-body.swap,.pop,.vfade{animation-timing-function:var(--ease)}
+.btn{transition:transform .12s var(--ease),background-color .15s var(--ease),border-color .15s var(--ease)}
+.btn:active{transform:scale(.97)}
+.chipf,.seg button,details.new summary,.comfb,.shnav button,.gzoom button{transition:background-color .15s var(--ease),border-color .15s var(--ease),transform .12s var(--ease)}
+.chipf:active,.seg button:active,.comfb:active{transform:scale(.96)}
+.shnav button:disabled{opacity:.4;cursor:default}
+@media (hover:hover) and (pointer:fine){
+  .chipf:not([aria-pressed="true"]):hover,.seg button:not([aria-pressed="true"]):hover,details.new summary:hover,.comfb:hover,.shnav button:not(:disabled):hover,.gzoom button:hover,.btn.ghost:hover{border-color:var(--ash)}
+  .btn:not(.ghost):hover{background:color-mix(in srgb,var(--ember) 86%,var(--sumi))}
+  .app:hover .icon{transform:translateY(-3px)}
+  .linkb:hover{text-decoration-color:var(--spark)}
+  .orb:not(:disabled):hover .c{border-color:var(--spark)}
+}
+/* Hero depth: a faint loop behind the card, the icon in front; they drift apart under the pointer */
+.hero{--px:0;--py:0;position:relative;overflow:hidden;isolation:isolate}
+.hero-loop{position:absolute;z-index:-1;right:-96px;bottom:-58px;width:280px;height:168px;fill:none;stroke:var(--line);stroke-width:1.2;opacity:.8;pointer-events:none;transform:translate(calc(var(--px)*-12px),calc(var(--py)*-8px));transition:transform .7s var(--ease)}
+.hero .btn.ghost{background:var(--panel)}
+.hero>.icon{transform:translate(calc(var(--px)*5px),calc(var(--py)*4px));transition:transform .5s var(--ease)}
+/* Vote: each circle fills to its share as it scrolls into view; the live app fills all the way */
+.orb.live .c{background:none}
+.orb.live .c i{background:var(--spark)}
+@keyframes fillup{from{transform:scaleY(0)}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@supports (animation-timeline: view()){@media (prefers-reduced-motion: no-preference){
+  :root:not([data-calm="1"]) .orb .c i{transform-origin:bottom;animation:fillup linear both;animation-timeline:view();animation-range:entry 20% cover 40%}
+  :root:not([data-calm="1"]) .vote h2{animation:rise linear both;animation-timeline:view();animation-range:entry 0% cover 22%}
+}}
+/* Signature: the page is a loop. Scrolling traces the ∞, the end of the page closes it, tap loops you back */
+.loopback{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:15;width:56px;height:40px;padding:0;border-radius:999px;border:1px solid var(--line);background:color-mix(in srgb,var(--panel) 94%,transparent);display:grid;place-items:center;cursor:pointer;box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 7%,transparent),0 10px 22px -14px rgba(0,0,0,.5);opacity:0;transform:translateY(8px) scale(.95);pointer-events:none;transition:opacity .2s var(--ease),transform .2s var(--ease),border-color .3s var(--ease)}
+.loopback.on{opacity:1;transform:none;pointer-events:auto}
+.loopback:active{transform:scale(.94)}
+.loopback:focus-visible{outline:2px solid var(--ember);outline-offset:2px}
+.loopback svg{width:34px;height:20px;overflow:visible}
+.loopback path{fill:none;stroke-width:7;stroke-linecap:round}
+.lb-track{stroke:var(--line)}
+.lb-fill{stroke:var(--spark);stroke-dasharray:1;stroke-dashoffset:1}
+.loopback.done{border-color:var(--spark)}
+#loopline{transition:color .4s var(--ease)}
+#loopline.lit{color:var(--spark-t)}
+@media (prefers-reduced-motion: reduce){.loopback,.hero-loop,.hero>.icon{transition:none}}
 </style>
 
 <canvas id="season" aria-hidden="true"></canvas>
@@ -358,10 +416,11 @@ kbd{font-family:var(--mono);font-size:.72rem;border:1px solid var(--line);border
     <p class="tag">Make what <em>matters</em>. Keep looping.</p>
     <p class="intro">Small apps built by one student in Kitchener-Waterloo. Tap one and try it.</p>
     <div class="now">
-      <p class="now-line mono" style="margin:0"><span class="pulse" aria-hidden="true"></span><span>Now looping on: StratAG, live for the January 2027 term · <span class="daycount" id="daycount"></span></span></p>
+      <p class="now-line" style="margin:0"><span class="pulse" aria-hidden="true"></span><span>Now looping on: StratAG, live for the January 2027 term · <span class="daycount" id="daycount"></span></span></p>
       <details class="new mono" id="new">
         <summary>What's new <span class="ndot" id="ndot" hidden></span></summary>
         <ul class="newlog">
+          <li><time datetime="2026-11-28">Nov 28, 2026</time>Craft pass: a loop that follows your scroll, votes that fill as you arrive, calmer type</li>
           <li><time datetime="2026-11-26">Nov 26, 2026</time>Polish pass: StratAG front and centre, status on every app, calmer layout</li>
           <li><time datetime="2026-11-26">Nov 26, 2026</time>Real leaves, snow and rain; a Comfort menu for weather, motion, text size and contrast</li>
           <li><time datetime="2026-11-26">Nov 26, 2026</time>Eight breaths, seasons of Waterloo, a wish box in every app</li>
@@ -413,7 +472,7 @@ kbd{font-family:var(--mono);font-size:.72rem;border:1px solid var(--line);border
 
   <section class="vote" aria-labelledby="vote-h">
     <h2 id="vote-h">Which app should go live next?</h2>
-    <p class="mono" id="vote-note">Tap a circle to vote. The fill shows how many people picked it.</p>
+    <p id="vote-note">Tap a circle to vote. The fill shows how many people picked it.</p>
     <div class="orbs" id="orbs"></div>
   </section>
 
@@ -443,7 +502,7 @@ kbd{font-family:var(--mono);font-size:.72rem;border:1px solid var(--line);border
     <div class="shnav"><button id="sh-prev" aria-label="Previous app">‹</button><div class="dots" id="sh-dots" aria-hidden="true"></div><button id="sh-next" aria-label="Next app">›</button></div>
   </dialog>
 
-  <footer class="mono">
+  <footer>
     <div class="maker"><span class="mono-mark" aria-hidden="true">C</span><span><b>Chidex</b>Student in Kitchener-Waterloo. One app per loop.</span></div>
     <details class="more"><summary>More</summary><div class="more-in">
     <div class="foot-links"><button class="linkb mono" id="breathe">Take eight breaths ∞</button><button class="linkb mono" id="sup-b" aria-expanded="false" aria-controls="support">Support ikiloop</button><span>Press <kbd>?</kbd> for shortcuts</span></div>
@@ -452,9 +511,10 @@ kbd{font-family:var(--mono);font-size:.72rem;border:1px solid var(--line);border
       <p class="mono" id="sup-link"></p>
     </div>
     </div></details>
-    <span style="flex-basis:100%">© 2026 ikiloop · still looping</span>
+    <span class="mono" id="loopline" style="flex-basis:100%">© 2026 ikiloop · still looping</span>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <button class="loopback" id="loopback" aria-label="Back to the top"><svg viewBox="0 0 100 60" aria-hidden="true"><path class="lb-track" d="M50 30 C60 12 88 12 88 30 C88 48 60 48 50 30 C40 12 12 12 12 30 C12 48 40 48 50 30 Z"/><path class="lb-fill" id="lb-fill" pathLength="1" d="M50 30 C60 12 88 12 88 30 C88 48 60 48 50 30 C40 12 12 12 12 30 C12 48 40 48 50 30 Z"/></svg></button>
 </div>
 
 <script>
@@ -548,7 +608,7 @@ function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localSto
   document.getElementById('sh-close').addEventListener('click',close);
   sheet.addEventListener('click',function(e){if(e.target===sheet)close()});
   (function(){ var a=APPS.filter(function(x){return x.flag})[0], h=document.getElementById('hero'); if(!a){h.hidden=true;return}
-    h.innerHTML=icon(a,false)+'<div><span class="eyebrow">Flagship · live now</span><h2>'+(a.html||a.n)+'</h2><p>'+a.one+'</p></div><div class="acts"><a class="btn" href="'+a.url+'" target="_blank" rel="noopener">Try '+a.n+' <span aria-hidden="true">↗</span></a><button class="btn ghost" data-hero="'+APPS.indexOf(a)+'">Details</button></div>';
+    h.innerHTML='<svg class="hero-loop" viewBox="0 0 100 60" aria-hidden="true"><path d="M50 30 C60 12 88 12 88 30 C88 48 60 48 50 30 C40 12 12 12 12 30 C12 48 40 48 50 30 Z"/></svg>'+icon(a,false)+'<div><span class="eyebrow">Flagship · live now</span><h2>'+(a.html||a.n)+'</h2><p>'+a.one+'</p></div><div class="acts"><a class="btn" href="'+a.url+'" target="_blank" rel="noopener">Try '+a.n+' <span aria-hidden="true">↗</span></a><button class="btn ghost" data-hero="'+APPS.indexOf(a)+'">Details</button></div>';
     h.addEventListener('click',function(e){ var b=e.target.closest('[data-hero]'); if(b) open(+b.dataset.hero); }); })();
   renderFilters(); render(false);
   // deep link: #stratag opens that app
@@ -556,7 +616,7 @@ function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localSto
   setTimeout(fromHash,0); window.addEventListener('hashchange',fromHash);
 
   // what's new dot: shown until this visitor opens the log
-  var LATEST='2026-11-26g', nd=document.getElementById('ndot');
+  var LATEST='2026-11-28a', nd=document.getElementById('ndot');
   if(store('ik-new')!==LATEST) nd.hidden=false;
   document.getElementById('new').addEventListener('toggle',function(){ if(this.open){ nd.hidden=true; store('ik-new',LATEST); } });
 })();
@@ -628,7 +688,7 @@ function demoHTML(a){return '<div class="demo" aria-hidden="true">'+DEMOS[a.g]+'
   function drawOrbs(){
     var total=0; for(var k in tally) total+=tally[k];
     var live=APPS.filter(function(a){return a.live});
-    orbs.innerHTML=live.map(function(a){return '<button class="orb live" disabled><span class="c"></span><span class="nm">'+a.n+'</span><span class="mono ct">live</span></button>'}).join('')+
+    orbs.innerHTML=live.map(function(a){return '<button class="orb live" disabled><span class="c"><i style="height:100%"></i></span><span class="nm">'+a.n+'</span><span class="mono ct">live</span></button>'}).join('')+
       VOTE.map(function(a){ var s=slug(a), v=tally[s]||0, pct=total?Math.round(v/total*100):0;
         return '<button class="orb'+(mine===s?' mine':'')+'" data-v="'+s+'"'+(db?'':' disabled')+' aria-label="Vote for '+esc(a.n)+', '+v+' votes"><span class="c"><i style="height:'+pct+'%"></i></span><span class="nm">'+esc(a.n)+'</span><span class="mono ct">'+v+'</span></button>'; }).join('');
   }
@@ -936,6 +996,25 @@ function hanko(line){
   rest(); setTimeout(play,500);
   // occasionally: once a minute, only while the tab is visible and nothing is open
   setInterval(function(){ if(!document.hidden && !document.getElementById('sheet').open) play(); },60000);
+})();
+
+(function(){ // the page is a loop: scrolling traces the ∞, the bottom closes it, tap loops back to the top
+  var b=document.getElementById('loopback'), f=document.getElementById('lb-fill'), line=document.getElementById('loopline'), raf=0, closed=false;
+  function upd(){ raf=0; var max=document.documentElement.scrollHeight-innerHeight, y=scrollY, p=max>0?Math.min(1,Math.max(0,y/max)):0;
+    f.style.strokeDashoffset=(1-p).toFixed(4); b.classList.toggle('on',y>innerHeight*.45);
+    var done=p>.995; b.classList.toggle('done',done); line.classList.toggle('lit',done);
+    if(done&&!closed){ closed=true; buzz(); } if(p<.9) closed=false; }
+  addEventListener('scroll',function(){ if(!raf) raf=requestAnimationFrame(upd); },{passive:true});
+  addEventListener('resize',upd); upd();
+  b.addEventListener('click',function(e){ var kb=e.detail===0, logo=document.getElementById('logo');
+    scrollTo({top:0,behavior:still()?'auto':'smooth'});
+    setTimeout(function(){ if(kb) logo.focus({preventScroll:true}); logo.click(); },still()?0:550); });
+})();
+(function(){ // hero depth under a mouse (never on touch, never with reduced motion)
+  var h=document.getElementById('hero'); if(!h||!window.matchMedia||!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  h.addEventListener('pointermove',function(e){ if(still()) return; var r=h.getBoundingClientRect();
+    h.style.setProperty('--px',((e.clientX-r.left)/r.width*2-1).toFixed(3)); h.style.setProperty('--py',((e.clientY-r.top)/r.height*2-1).toFixed(3)); });
+  h.addEventListener('pointerleave',function(){ h.style.setProperty('--px',0); h.style.setProperty('--py',0); });
 })();
 </script>
 
